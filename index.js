@@ -54,10 +54,31 @@ async function run() {
     //delete
     app.delete('/jobs/:id', async (req, res) => {
       const id = req.params.id
-      const query = { _id: new ObjectId(id) }
+      const query = { _id: new ObjectId(id) }     
       const result = await jobCollection.deleteOne(query)
       res.send(result);
     });
+    //put
+    app.put('/jobsUpdate/:id', async (req, res) => {
+       const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+       const options = { upsert: true };
+      const body = req.body;
+       const updateDoc = {
+      $set: {
+                    jobTitle: body.jobTitle,
+                    category: body.category,
+                    email: body.email,
+                    priceRange: body.priceRange,
+                    maxPrice: body.maxPrice,
+                    deadline: body.deadline,
+                    img: body.img,
+                    shortDescription: body.shortDescription
+      },
+      };
+      const result = await movies.updateOne(query, updateDoc, options);
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });

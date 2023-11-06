@@ -33,6 +33,7 @@ async function run() {
     // await client.connect();
 
     const jobCollection = client.db("jobHunter").collection('jobs');
+    const userCollection = client.db("jobHunter").collection('users');
     //job post
     app.post('/addJobs', async (req, res) => {
       const body = req.body;
@@ -50,6 +51,13 @@ async function run() {
       const result = await jobCollection.findOne(query)
       res.send(result);
     });
+    //findone
+    app.get('/jobs/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await jobCollection.findOne(query)
+      res.send(result);
+    });
 
     //delete
     app.delete('/jobs/:id', async (req, res) => {
@@ -59,25 +67,31 @@ async function run() {
       res.send(result);
     });
     //put
-    app.put('/jobsUpdate/:id', async (req, res) => {
-       const id = req.params.id
+    app.put('/jobs/:id', async (req, res) => {
+      const id = req.params.id
       const query = { _id: new ObjectId(id) }
-       const options = { upsert: true };
+      const options = { upsert: true };
       const body = req.body;
-       const updateDoc = {
-      $set: {
-                    jobTitle: body.jobTitle,
-                    category: body.category,
-                    email: body.email,
-                    priceRange: body.priceRange,
-                    maxPrice: body.maxPrice,
-                    deadline: body.deadline,
-                    img: body.img,
-                    shortDescription: body.shortDescription
-      },
+      const updateDoc = {
+        $set: {
+          jobTitle: body.jobTitle,
+          category: body.category,
+          email: body.email,
+          priceRange: body.priceRange,
+          maxPrice: body.maxPrice,
+          deadline: body.deadline,
+          img: body.img,
+          shortDescription: body.shortDescription
+        },
       };
-      const result = await movies.updateOne(query, updateDoc, options);
+      const result = await jobCollection.updateOne(query, updateDoc, options);
       res.send(result)
+    });
+
+    //user post
+    app.post('/users', async (req, res) => {
+      const result = await userCollection.insertOne(req.body);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
